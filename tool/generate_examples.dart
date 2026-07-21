@@ -56,6 +56,10 @@ print(tsDoc.title?.string);
 final tsFrag = TypedSoup.fragment('<div class="box"><span>Fragment Content</span></div>');
 print(tsFrag.find('span')?.string);
 // Output: Fragment Content
+
+// Or use String extension:
+final tsExt = '<div class="box"><span>Fragment Content</span></div>'.parseSoupFragment();
+print(tsExt.span?.string);
 ''',
           verify: (ts) {
             final tsDoc = TypedSoup(htmlDoc);
@@ -64,6 +68,151 @@ print(tsFrag.find('span')?.string);
               '<div class="box"><span>Fragment Content</span></div>',
             );
             assert(tsFrag.find('span')?.string == 'Fragment Content');
+            final tsExt = '<div class="box"><span>Fragment Content</span></div>'
+                .parseSoupFragment();
+            assert(tsExt.span?.string == 'Fragment Content');
+          },
+        ),
+        ExampleItem(
+          title: 'Direct Tag Collections and Property Accessors',
+          description:
+              'Access plural element getters, attribute properties, and element helpers.',
+          code: '''
+final ts = htmlDoc.parseSoup();
+
+// Plural tag collection getters
+print(ts.links.map((e) => e.href).toList());
+// Output: [http://example.com/elsie, http://example.com/lacie, http://example.com/tillie]
+
+print(ts.paragraphs.length); // 3
+
+// Property accessors for common attributes
+final link1 = ts.links.first;
+print(link1.href); // http://example.com/elsie
+print(link1.trimmedText); // Elsie
+
+// Quick child existence check
+print(ts.body!.hasChild('p.story')); // true
+''',
+          verify: (ts) {
+            final tsDoc = htmlDoc.parseSoup();
+            assert(tsDoc.links.length == 3);
+            assert(tsDoc.paragraphs.length == 3);
+            final link1 = tsDoc.links.first;
+            assert(link1.href == 'http://example.com/elsie');
+            assert(link1.trimmedText == 'Elsie');
+            assert(tsDoc.body!.hasChild('p.story'));
+          },
+        ),
+        ExampleItem(
+          title: 'Table Data Parsing, Data Attributes, and Ancestor Matching',
+          description:
+              'Convert HTML tables directly to List<Map<String, String>>, access HTML5 data-* attributes, and find closest matching ancestors.',
+          code: '''
+// 1. Table Parsing to JSON/Maps
+final tableTs = """
+<table>
+  <tr><th>Name</th><th>Role</th></tr>
+  <tr><td>Alice</td><td>Admin</td></tr>
+</table>
+""".parseSoup();
+
+List<Map<String, String>> tableData = tableTs.table!.toTableData();
+print(tableData);
+// Output: [{'Name': 'Alice', 'Role': 'Admin'}]
+
+// 2. HTML5 Data Attributes
+final userDiv = '<div data-user-id="42" data-role="editor"></div>'.parseSoupFragment().div!;
+print(userDiv.dataAttr('user-id')); // 42
+print(userDiv.dataAttrs); // {'user-id': '42', 'role': 'editor'}
+
+// 3. Nearest Ancestor Matching (.closest)
+final link = htmlDoc.parseSoup().find('a', id: 'link1')!;
+print(link.closest('p.story')?.className); // story
+
+// 4. Text Line Cleaning (.strippedLines)
+final multiline = "<div>\\n  Line 1  \\n\\n  Line 2  \\n</div>".parseSoupFragment().div!;
+print(multiline.strippedLines); // [Line 1, Line 2]
+''',
+          verify: (ts) {
+            final tableTs =
+                """
+<table>
+  <tr><th>Name</th><th>Role</th></tr>
+  <tr><td>Alice</td><td>Admin</td></tr>
+</table>
+"""
+                    .parseSoup();
+            final tableData = tableTs.table!.toTableData();
+            assert(tableData.length == 1);
+            assert(tableData[0]['Name'] == 'Alice');
+
+            final userDiv = '<div data-user-id="42" data-role="editor"></div>'
+                .parseSoupFragment()
+                .div!;
+            assert(userDiv.dataAttr('user-id') == '42');
+            assert(userDiv.dataAttrs['role'] == 'editor');
+
+            final link = htmlDoc.parseSoup().find('a', id: 'link1')!;
+            assert(link.closest('p.story')?.className == 'story');
+
+            final multiline = "<div>\n  Line 1  \n\n  Line 2  \n</div>"
+                .parseSoupFragment()
+                .div!;
+            assert(multiline.strippedLines.length == 2);
+          },
+        ),
+        ExampleItem(
+          title:
+              'Form Serialization, ownText, List Extensions, and Custom Search',
+          description:
+              'Extract form data maps, retrieve direct node ownText, use collection extensions, and search with custom predicates.',
+          code: '''
+// 1. Form Data Serialization
+final formTs = """
+<form action="/login">
+  <input name="user" value="alice" />
+  <input name="pass" value="secret" />
+</form>
+""".parseSoup();
+print(formTs.form!.toFormData()); // {'user': 'alice', 'pass': 'secret'}
+
+// 2. Direct ownText (excluding nested tags)
+final card = '<div>Welcome <span>User</span>!</div>'.parseSoupFragment().div!;
+print(card.text); // Welcome User!
+print(card.ownTextTrimmed); // Welcome !
+
+// 3. List Collection Extensions (.hrefs, .trimmedTexts, .withClass)
+final links = htmlDoc.parseSoup().links;
+print(links.hrefs); // [http://example.com/elsie, http://example.com/lacie, http://example.com/tillie]
+
+// 4. Custom Predicate Search (.findWhere / .findAllWhere)
+final match = htmlDoc.parseSoup().findWhere((e) => e.href?.contains('lacie') ?? false);
+print(match?.string); // Lacie
+''',
+          verify: (ts) {
+            final formTs =
+                """
+<form action="/login">
+  <input name="user" value="alice" />
+  <input name="pass" value="secret" />
+</form>
+"""
+                    .parseSoup();
+            assert(formTs.form!.toFormData()['user'] == 'alice');
+
+            final card = '<div>Welcome <span>User</span>!</div>'
+                .parseSoupFragment()
+                .div!;
+            assert(card.ownTextTrimmed == 'Welcome !');
+
+            final links = htmlDoc.parseSoup().links;
+            assert(links.hrefs.length == 3);
+
+            final match = htmlDoc.parseSoup().findWhere(
+              (e) => e.href?.contains('lacie') ?? false,
+            );
+            assert(match?.string == 'Lacie');
           },
         ),
       ],

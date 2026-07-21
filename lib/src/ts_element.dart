@@ -586,6 +586,183 @@ class TsElement extends Shared
   @override
   void setAttr(String name, String value) => this[name] = value;
 
+  String? _getAttr(String attrName) => _element.attributes[attrName];
+  void _setAttr(String attrName, String? value) {
+    if (value == null) {
+      _element.attributes.remove(attrName);
+    } else {
+      _element.attributes[attrName] = value;
+    }
+  }
+
+  @override
+  String? get href => _getAttr('href');
+  @override
+  set href(String? value) => _setAttr('href', value);
+
+  @override
+  String? get src => _getAttr('src');
+  @override
+  set src(String? value) => _setAttr('src', value);
+
+  @override
+  String? get alt => _getAttr('alt');
+  @override
+  set alt(String? value) => _setAttr('alt', value);
+
+  @override
+  String? get value => _getAttr('value');
+  @override
+  set value(String? value) => _setAttr('value', value);
+
+  @override
+  String? get type => _getAttr('type');
+  @override
+  set type(String? value) => _setAttr('type', value);
+
+  @override
+  String? get target => _getAttr('target');
+  @override
+  set target(String? value) => _setAttr('target', value);
+
+  @override
+  String? get action => _getAttr('action');
+  @override
+  set action(String? value) => _setAttr('action', value);
+
+  @override
+  String get trimmedText => _element.text.trim();
+
+  @override
+  bool hasChild(String selector) => _element.querySelector(selector) != null;
+
+  @override
+  List<TsElement> childrenByTag(String tagName) =>
+      children.where((e) => e.name == tagName).toList();
+
+  @override
+  List<Map<String, String>> toTableData() {
+    final rows = _element.querySelectorAll('tr');
+    if (rows.isEmpty) return [];
+
+    final headerRow = rows.first;
+    final headers = headerRow
+        .querySelectorAll('th, td')
+        .map((e) => e.text.trim())
+        .toList();
+
+    if (headers.isEmpty) return [];
+
+    final result = <Map<String, String>>[];
+    final dataRows = rows.skip(1);
+    for (final row in dataRows) {
+      final cells = row
+          .querySelectorAll('td, th')
+          .map((e) => e.text.trim())
+          .toList();
+      if (cells.isEmpty) continue;
+
+      final rowMap = <String, String>{};
+      for (int i = 0; i < headers.length; i++) {
+        final key = headers[i].isNotEmpty ? headers[i] : 'col_$i';
+        rowMap[key] = i < cells.length ? cells[i] : '';
+      }
+      result.add(rowMap);
+    }
+    return result;
+  }
+
+  @override
+  String? dataAttr(String name) {
+    final key = name.startsWith('data-') ? name : 'data-$name';
+    return _element.attributes[key];
+  }
+
+  @override
+  Map<String, String> get dataAttrs {
+    final map = <String, String>{};
+    for (final entry in _element.attributes.entries) {
+      final keyStr = entry.key.toString();
+      if (keyStr.startsWith('data-')) {
+        map[keyStr.substring(5)] = entry.value;
+      }
+    }
+    return map;
+  }
+
+  @override
+  bool matches(String selector) {
+    final parentNode = _element.parentNode;
+    if (parentNode is Element) {
+      return parentNode.querySelectorAll(selector).contains(_element);
+    }
+    if (parentNode is Document) {
+      return parentNode.querySelectorAll(selector).contains(_element);
+    }
+    if (parentNode is DocumentFragment) {
+      return parentNode.querySelectorAll(selector).contains(_element);
+    }
+    final tempGroup = DocumentFragment()..append(_element.clone(true));
+    return tempGroup.querySelectorAll(selector).isNotEmpty;
+  }
+
+  @override
+  TsElement? closest(String selector) {
+    TsElement? curr = this;
+    while (curr != null) {
+      if (curr.matches(selector)) return curr;
+      curr = curr.parent;
+    }
+    return null;
+  }
+
+  @override
+  List<String> get strippedLines => _element.text
+      .split(RegExp(r'\r?\n'))
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .toList();
+
+  @override
+  String get ownText =>
+      _element.nodes.whereType<Text>().map((t) => t.text).join('');
+
+  @override
+  String get ownTextTrimmed => ownText.trim();
+
+  @override
+  Map<String, String> toFormData() {
+    final fields = _element.querySelectorAll('input, select, textarea, button');
+    final formData = <String, String>{};
+
+    for (final field in fields) {
+      final name = field.attributes['name'];
+      if (name == null || name.isEmpty) continue;
+
+      final tag = field.localName?.toLowerCase();
+      final type = field.attributes['type']?.toLowerCase();
+      if (type == 'checkbox' || type == 'radio') {
+        final isChecked = field.attributes.containsKey('checked');
+        if (!isChecked) continue;
+      }
+
+      String value;
+      if (tag == 'select') {
+        final selectedOpt =
+            field.querySelector('option[selected]') ??
+            field.querySelector('option');
+        value =
+            selectedOpt?.attributes['value'] ?? selectedOpt?.text.trim() ?? '';
+      } else {
+        value = field.attributes['value'] ?? field.text.trim();
+      }
+
+      formData[name] = value;
+    }
+
+    return formData;
+  }
+
   @override
   String toString() => outerHtml;
 }

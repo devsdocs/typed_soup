@@ -1,12 +1,45 @@
 import 'package:html/dom.dart';
 
 import 'ts_element.dart';
+import 'ts_soup.dart';
 
 /// Extension for [Element].
 extension ElementExt on Element {
   /// Returns [TsElement] from the [Element] ([which comes from
   /// `html` Dart package](https://pub.dev/packages/html)).
   TsElement get ts => TsElement(this);
+}
+
+/// Extension for [String] for convenient parsing.
+extension StringSoupExt on String {
+  /// Parses this HTML string into a [TypedSoup] document.
+  TypedSoup parseSoup() => TypedSoup(this);
+
+  /// Parses this HTML string into a [TypedSoup] fragment.
+  TypedSoup parseSoupFragment() => TypedSoup.fragment(this);
+}
+
+/// Extension for [List<TsElement>] for convenient collection operations.
+extension TsElementListExt on List<TsElement> {
+  /// Extracts all non-null `href` attribute values.
+  List<String> get hrefs => map((e) => e.href).whereType<String>().toList();
+
+  /// Extracts all non-null `src` attribute values.
+  List<String> get srcs => map((e) => e.src).whereType<String>().toList();
+
+  /// Extracts full text strings from all elements.
+  List<String> get texts => map((e) => e.text).toList();
+
+  /// Extracts trimmed text strings from all elements.
+  List<String> get trimmedTexts => map((e) => e.trimmedText).toList();
+
+  /// Filters elements that contain the specified CSS [className].
+  List<TsElement> withClass(String className) =>
+      where((e) => e.classes.contains(className)).toList();
+
+  /// Filters elements that have specified attribute [name] (and optional [value]).
+  List<TsElement> withAttr(String name, [String? value]) =>
+      where((e) => value == null ? e.hasAttr(name) : e[name] == value).toList();
 }
 
 /// Extensions for [Node].

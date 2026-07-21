@@ -363,4 +363,13 @@ abstract class ITreeSearcher {
   ///
   /// [selector] - CSS selector string
   TsElement? select_one(String selector);
+
+  /// Returns the first element matching custom [predicate].
+  TsElement? findWhere(bool Function(TsElement element) predicate);
+
+  /// Returns all elements matching custom [predicate].
+  List<TsElement> findAllWhere(
+    bool Function(TsElement element) predicate, {
+    int? limit,
+  });
 }

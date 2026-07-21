@@ -1,6 +1,6 @@
 import '../ts_element.dart';
 
-/// Contains some most common tags for quick and easy navigating
+/// Contains most common tags and collection getters for quick and easy navigating
 /// down the parse tree.
 abstract class ITags {
   /// {@template tags_common_tag}
@@ -61,4 +61,108 @@ abstract class ITags {
 
   /// {@macro tags_common_tag}
   TsElement? get dl;
+
+  /// {@macro tags_common_tag}
+  TsElement? get div;
+
+  /// {@macro tags_common_tag}
+  TsElement? get span;
+
+  /// {@macro tags_common_tag}
+  TsElement? get form;
+
+  /// {@macro tags_common_tag}
+  TsElement? get input;
+
+  /// {@macro tags_common_tag}
+  TsElement? get button;
+
+  /// {@macro tags_common_tag}
+  TsElement? get label;
+
+  /// {@macro tags_common_tag}
+  TsElement? get selectTag;
+
+  /// {@macro tags_common_tag}
+  TsElement? get textarea;
+
+  /// {@macro tags_common_tag}
+  TsElement? get section;
+
+  /// {@macro tags_common_tag}
+  TsElement? get article;
+
+  /// {@macro tags_common_tag}
+  TsElement? get header;
+
+  /// {@macro tags_common_tag}
+  TsElement? get footer;
+
+  /// {@macro tags_common_tag}
+  TsElement? get nav;
+
+  /// {@macro tags_common_tag}
+  TsElement? get main;
+
+  /// {@macro tags_common_tag}
+  TsElement? get li;
+
+  /// {@macro tags_common_tag}
+  TsElement? get tr;
+
+  /// {@macro tags_common_tag}
+  TsElement? get td;
+
+  /// {@macro tags_common_tag}
+  TsElement? get th;
+
+  /// {@macro tags_common_tag}
+  TsElement? get code;
+
+  /// {@macro tags_common_tag}
+  TsElement? get pre;
+
+  /// {@macro tags_common_tag}
+  TsElement? get iframe;
+
+  // Plural Collection Getters
+
+  /// Returns all `<a>` elements down the parse tree.
+  List<TsElement> get links;
+
+  /// Returns all `<p>` elements down the parse tree.
+  List<TsElement> get paragraphs;
+
+  /// Returns all `<img>` elements down the parse tree.
+  List<TsElement> get imgs;
+
+  /// Returns all `<div>` elements down the parse tree.
+  List<TsElement> get divs;
+
+  /// Returns all `<span>` elements down the parse tree.
+  List<TsElement> get spans;
+
+  /// Returns all `<button>` elements down the parse tree.
+  List<TsElement> get buttons;
+
+  /// Returns all `<input>` elements down the parse tree.
+  List<TsElement> get inputs;
+
+  /// Returns all `<form>` elements down the parse tree.
+  List<TsElement> get forms;
+
+  /// Returns all `<table>` elements down the parse tree.
+  List<TsElement> get tables;
+
+  /// Returns all `<tr>` elements down the parse tree.
+  List<TsElement> get rows;
+
+  /// Returns all `<td>` and `<th>` elements down the parse tree.
+  List<TsElement> get cells;
+
+  /// Returns all `<li>` elements down the parse tree.
+  List<TsElement> get items;
+
+  /// Returns all heading elements (`<h1>`–`<h6>`) down the parse tree.
+  List<TsElement> get headings;
 }

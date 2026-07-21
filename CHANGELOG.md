@@ -1,3 +1,17 @@
+## 1.0.3
+
+- **Direct Node Text**: Added `element.ownText` and `element.ownTextTrimmed` to extract text belonging solely to the element directly (excluding nested child elements).
+- **Form Data Serialization**: Added `form.toFormData()` to serialize form controls (`<input>`, `<select>`, `<textarea>`, `<button>`) into `Map<String, String>`.
+- **List Collection Extensions**: Added `TsElementListExt` for easy mapping and filtering (`.hrefs`, `.srcs`, `.texts`, `.trimmedTexts`, `.withClass()`, `.withAttr()`).
+- **Custom Predicate Search**: Added `ts.findWhere(predicate)` and `ts.findAllWhere(predicate)` to query elements using custom Dart functions.
+- **Table Parsing to Maps**: Added `table.toTableData()` to parse HTML table elements into `List<Map<String, String>>`.
+- **HTML5 Data Attributes**: Added `element.dataAttr(name)` and `element.dataAttrs` map getter for `data-*` attributes.
+- **Ancestor Matching**: Added `element.closest(selector)` and `element.matches(selector)` to query matching ancestor elements up the tree.
+- **Text Lines Utility**: Added `element.strippedLines` to extract trimmed, non-blank text lines.
+- **Convenient String Extension**: Added `String.parseSoup()` and `String.parseSoupFragment()`.
+- **Expanded Tag Shortcuts & Collections**: Added single tag getters (`div`, `span`, `form`, `input`, `button`, `label`, `selectTag`, `textarea`, `section`, `article`, `header`, `footer`, `nav`, `main`, `li`, `tr`, `td`, `th`, `code`, `pre`, `iframe`) and plural collection getters (`links`, `paragraphs`, `imgs`, `divs`, `spans`, `buttons`, `inputs`, `forms`, `tables`, `rows`, `cells`, `items`, `headings`).
+- **Attribute Accessors**: Added `href`, `src`, `alt`, `value`, `type`, `target`, `action` property getters & setters on `TsElement`.
+
 ## 1.0.2
 
 - **Prettify Enhancements**: Rewrote `prettify()` with a recursive HTML formatter that outputs clean, 2-space indented HTML trees; added optional `indent` parameter (`prettify({String indent = '  '})`).

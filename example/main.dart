@@ -22,12 +22,12 @@ const html_doc = '''
 
 void main() {
   print('--- 1. Parsing HTML ---');
-  final ts = TypedSoup(html_doc);
-  final tsFrag = TypedSoup.fragment(
-    '<div><span class="note">Fragment</span></div>',
-  );
+  // Standard constructor or convenient String extension
+  final ts = html_doc.parseSoup();
+  final tsFrag = '<div class="box"><span class="note">Fragment</span></div>'
+      .parseSoupFragment();
   print('Title from document: ${ts.title?.string}');
-  print('Span from fragment: ${tsFrag.find('span')?.string}');
+  print('Span from fragment: ${tsFrag.span?.string}');
 
   print('\n--- 2. Navigating the Tree ---');
   print('Direct tag navigation: ${ts.body?.p?.b?.string}');
@@ -40,9 +40,9 @@ void main() {
   final titleP = ts.find('p', class_: 'title');
   print('First title paragraph: ${titleP?.outerHtml}');
 
-  // Find all matching elements
-  final sisterLinks = ts.findAll('a', class_: 'sister');
-  print('Sister link IDs: ${sisterLinks.map((e) => e.id).toList()}');
+  // Find all matching elements using plural collection getters
+  print('Sister link URLs: ${ts.links.map((e) => e.href).toList()}');
+  print('Paragraph count: ${ts.paragraphs.length}');
 
   // CSS Selectors
   final firstLink = ts.select_one('p.story > a#link1');
@@ -51,7 +51,8 @@ void main() {
   print('\n--- 4. Modifying the Tree ---');
   final link1 = ts.find('a', id: 'link1')!;
 
-  // Modify attributes and contents (mutates tree in-place)
+  // Modify attributes using convenient setters
+  link1.href = 'http://example.com/elsie-updated';
   link1['class'] = 'sister active';
   link1.setAttr('data-status', 'verified');
   link1.string = 'Elsie (Updated)';
@@ -77,4 +78,9 @@ void main() {
   // Method 2: ts.prettify() (gives formatted full HTML string)
   print('\n--- Prettified Modified HTML (prettify) ---');
   print(ts.prettify());
+
+  print('\n--- 6. Quick Access Helpers ---');
+  print('Link href: ${ts.links.first.href}');
+  print('Link trimmed text: ${ts.links.first.trimmedText}');
+  print('Body has story paragraph: ${ts.body?.hasChild("p.story")}');
 }

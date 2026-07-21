@@ -513,6 +513,31 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
   }
 
   @override
+  TsElement? findWhere(bool Function(TsElement element) predicate) {
+    final all = findAll('*');
+    for (final elem in all) {
+      if (predicate(elem)) return elem;
+    }
+    return null;
+  }
+
+  @override
+  List<TsElement> findAllWhere(
+    bool Function(TsElement element) predicate, {
+    int? limit,
+  }) {
+    final all = findAll('*');
+    final results = <TsElement>[];
+    for (final elem in all) {
+      if (predicate(elem)) {
+        results.add(elem);
+        if (limit != null && results.length >= limit) break;
+      }
+    }
+    return results;
+  }
+
+  @override
   Iterable<String> get strings sync* {
     Iterable<String> collectStrings(Node node) sync* {
       if (node.nodeType == Node.TEXT_NODE) {

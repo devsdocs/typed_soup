@@ -55,17 +55,16 @@ abstract class IElement {
   /// This set makes it easy to add, remove or toggle the classes applied to
   /// this element.
   ///
-  ///     bs4.classes.add('selected');
-  ///     bs4.classes.toggle('isOnline');
-  ///     bs4.classes.remove('selected');
+  ///     ts.classes.add('selected');
+  ///     ts.classes.toggle('isOnline');
+  ///     ts.classes.remove('selected');
   ///
   /// Copied from [Element].
   CssClassSet get classes;
 
   /// Returns the list of [Node]s.
   ///
-  /// Can be used to iterate not only elements, but also doc comments. strings
-  /// and etc.
+  /// Can be used to iterate not only elements, but also doc comments, strings, etc.
   NodeList get nodes;
 
   /// Move all the children of the current node to [newParent].
@@ -100,4 +99,72 @@ abstract class IElement {
   ///
   /// Returns [defaultValue] if attribute does not exist.
   String? get(String name, {String? defaultValue});
+
+  // Convenience Attribute Accessors
+
+  /// Getter/setter for `href` attribute.
+  String? get href;
+  set href(String? value);
+
+  /// Getter/setter for `src` attribute.
+  String? get src;
+  set src(String? value);
+
+  /// Getter/setter for `alt` attribute.
+  String? get alt;
+  set alt(String? value);
+
+  /// Getter/setter for `value` attribute.
+  String? get value;
+  set value(String? value);
+
+  /// Getter/setter for `type` attribute.
+  String? get type;
+  set type(String? value);
+
+  /// Getter/setter for `target` attribute.
+  String? get target;
+  set target(String? value);
+
+  /// Getter/setter for `action` attribute.
+  String? get action;
+  set action(String? value);
+
+  /// Returns trimmed text content of the element.
+  String get trimmedText;
+
+  /// Returns `true` if this element contains a matching child for [selector].
+  bool hasChild(String selector);
+
+  /// Returns direct child elements matching [tagName].
+  List<TsElement> childrenByTag(String tagName);
+
+  /// Converts an HTML table element into a list of row maps.
+  ///
+  /// Uses header cells (`<th>` or first row `<td>`) as map keys.
+  List<Map<String, String>> toTableData();
+
+  /// Gets value of a `data-*` attribute by key name (e.g. `user-id` or `data-user-id`).
+  String? dataAttr(String name);
+
+  /// Returns a map of all `data-*` attributes present on this element.
+  Map<String, String> get dataAttrs;
+
+  /// Returns the closest ancestor element (including self) matching [selector].
+  TsElement? closest(String selector);
+
+  /// Returns `true` if this element matches the given CSS [selector].
+  bool matches(String selector);
+
+  /// Returns a list of text lines with leading/trailing whitespace removed and empty lines excluded.
+  List<String> get strippedLines;
+
+  /// Returns text that belongs ONLY to this element directly (excluding nested child elements).
+  String get ownText;
+
+  /// Returns trimmed text that belongs ONLY to this element directly.
+  String get ownTextTrimmed;
+
+  /// Extracts form input names and values into a Map&lt;String, String&gt;.
+  Map<String, String> toFormData();
 }

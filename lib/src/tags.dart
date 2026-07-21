@@ -33,6 +33,11 @@ class Tags implements ITags {
   TsElement? _findFirst(String tagName) =>
       ((element ?? doc).querySelector(tagName) as Element?)?.ts;
 
+  List<TsElement> _findAll(String selector) =>
+      ((element ?? doc).querySelectorAll(selector) as List<Element>)
+          .map((e) => e.ts)
+          .toList();
+
   @override
   TsElement? get html => _findFirst('html');
 
@@ -89,4 +94,108 @@ class Tags implements ITags {
 
   @override
   TsElement? get ol => _findFirst('ol');
+
+  @override
+  TsElement? get div => _findFirst('div');
+
+  @override
+  TsElement? get span => _findFirst('span');
+
+  @override
+  TsElement? get form => _findFirst('form');
+
+  @override
+  TsElement? get input => _findFirst('input');
+
+  @override
+  TsElement? get button => _findFirst('button');
+
+  @override
+  TsElement? get label => _findFirst('label');
+
+  @override
+  TsElement? get selectTag => _findFirst('select');
+
+  @override
+  TsElement? get textarea => _findFirst('textarea');
+
+  @override
+  TsElement? get section => _findFirst('section');
+
+  @override
+  TsElement? get article => _findFirst('article');
+
+  @override
+  TsElement? get header => _findFirst('header');
+
+  @override
+  TsElement? get footer => _findFirst('footer');
+
+  @override
+  TsElement? get nav => _findFirst('nav');
+
+  @override
+  TsElement? get main => _findFirst('main');
+
+  @override
+  TsElement? get li => _findFirst('li');
+
+  @override
+  TsElement? get tr => _findFirst('tr');
+
+  @override
+  TsElement? get td => _findFirst('td');
+
+  @override
+  TsElement? get th => _findFirst('th');
+
+  @override
+  TsElement? get code => _findFirst('code');
+
+  @override
+  TsElement? get pre => _findFirst('pre');
+
+  @override
+  TsElement? get iframe => _findFirst('iframe');
+
+  // Plural Collection Getters
+
+  @override
+  List<TsElement> get links => _findAll('a');
+
+  @override
+  List<TsElement> get paragraphs => _findAll('p');
+
+  @override
+  List<TsElement> get imgs => _findAll('img');
+
+  @override
+  List<TsElement> get divs => _findAll('div');
+
+  @override
+  List<TsElement> get spans => _findAll('span');
+
+  @override
+  List<TsElement> get buttons => _findAll('button');
+
+  @override
+  List<TsElement> get inputs => _findAll('input');
+
+  @override
+  List<TsElement> get forms => _findAll('form');
+
+  @override
+  List<TsElement> get tables => _findAll('table');
+
+  @override
+  List<TsElement> get rows => _findAll('tr');
+
+  @override
+  List<TsElement> get cells => _findAll('td, th');
+
+  @override
+  List<TsElement> get items => _findAll('li');
+
+  @override
+  List<TsElement> get headings => _findAll('h1, h2, h3, h4, h5, h6');
 }
