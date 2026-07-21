@@ -8,7 +8,7 @@ import 'package:html/parser.dart';
 import 'shared.dart';
 
 /// {@template bs_soup}
-/// Beautiful Soup is a library for pulling data out of HTML files.
+/// Typed Soup is a library for pulling data out of HTML files.
 /// It provides ways of navigating, searching, and modifying the parse tree.
 /// It commonly saves programmers hours or days of work.
 ///
