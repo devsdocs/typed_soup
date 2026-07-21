@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Updated repository URLs and badges in documentation and package metadata.
+- Updated `lints` dev dependency.
+
 ## 1.0.0
 
 - **Major Release**: Full API alignment with Python Beautiful Soup 4
