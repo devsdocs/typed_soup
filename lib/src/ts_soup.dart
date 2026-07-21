@@ -24,28 +24,28 @@ import 'shared.dart';
 /// **2.** navigate quickly to any element
 ///
 /// ```
-/// TsElement ts = bs.body.p; // quickly with tags
-/// TsElement ts = bs.find('p', class_: 'story'); // finds first element with html tag "p" and which has "class" attribute with value "story"
-/// TsElement ts = bs.findAll('a', attrs: {'class': true}); // finds all elements with html tag "a" and which have defined "class" attribute with whatever value
-/// TsElement ts = bs.find('', selector: '#link1'); // find with custom CSS selector (other parameters are ignored)
-/// TsElement ts = bs.find('*', id: 'link1'); // find by id
-/// TsElement ts = bs.find('*', regex: r'^b'); // find any element which tag starts with "b", for example: body, b, ...
-/// TsElement ts = bs.find('p', string: r'^Article #\d*'); // find "p" element which text starts with "Article #[number]"
-/// TsElement ts = bs.find('a', attrs: {'href': 'http://example.com/elsie'}); // finds by "href" attribute
+/// TsElement elem = ts.body.p; // quickly with tags
+/// TsElement elem = ts.find('p', class_: 'story'); // finds first element with html tag "p" and which has "class" attribute with value "story"
+/// TsElement elem = ts.findAll('a', attrs: {'class': true}); // finds all elements with html tag "a" and which have defined "class" attribute with whatever value
+/// TsElement elem = ts.find('', selector: '#link1'); // find with custom CSS selector (other parameters are ignored)
+/// TsElement elem = ts.find('*', id: 'link1'); // find by id
+/// TsElement elem = ts.find('*', regex: r'^b'); // find any element which tag starts with "b", for example: body, b, ...
+/// TsElement elem = ts.find('p', string: r'^Article #\d*'); // find "p" element which text starts with "Article #[number]"
+/// TsElement elem = ts.find('a', attrs: {'href': 'http://example.com/elsie'}); // finds by "href" attribute
 /// ```
 ///
 /// **3.** perform any actions
 ///
 /// ```
-/// bs4.name; // get tag name
-/// bs4.string; // get text
-/// bs4.toString(); // get String representation of this element, same as outerHtml
-/// bs4.innerHtml; // get html elements inside the element
-/// bs4.className; // get class attribute value
-/// bs4['class']; // get class attribute value
-/// bs4['class'] = 'board'; // change class attribute value to 'board'
-/// bs4.children; // get all element's children elements
-/// bs4.replaceWith(otherTsElement); // replace with other element
+/// elem.name; // get tag name
+/// elem.string; // get text
+/// elem.toString(); // get String representation of this element, same as outerHtml
+/// elem.innerHtml; // get html elements inside the element
+/// elem.className; // get class attribute value
+/// elem['class']; // get class attribute value
+/// elem['class'] = 'board'; // change class attribute value to 'board'
+/// elem.children; // get all element's children elements
+/// elem.replaceWith(otherTsElement); // replace with other element
 /// ```
 ///
 /// and many more!
@@ -72,7 +72,7 @@ class TypedSoup extends Shared {
       newElement.attributes.addAll(attrs);
     }
     newElement.text = string;
-    return newElement.bs4;
+    return newElement.ts;
   }
 
   @override

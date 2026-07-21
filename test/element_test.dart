@@ -4,36 +4,36 @@ import 'package:test/test.dart';
 import 'fixtures/fixtures.dart';
 
 void main() {
-  late TypedSoup bs;
+  late TypedSoup ts;
 
   setUp(() {
-    bs = TypedSoup(html_doc);
+    ts = TypedSoup(html_doc);
   });
 
   group('Element', () {
     group('name', () {
       test('finds name by tag', () {
-        final bs4 = bs.title;
+        final elem = ts.title;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.name, 'title');
+        expect(elem, isNotNull);
+        expect(elem!.name, 'title');
       });
 
       test('finds name by find', () {
-        final bs4 = bs.find('title');
+        final elem = ts.find('title');
 
-        expect(bs4, isNotNull);
-        expect(bs4!.name, 'title');
+        expect(elem, isNotNull);
+        expect(elem!.name, 'title');
       });
     });
 
     group('outerHtml', () {
       test('finds outerHtml', () {
-        final bs4 = bs.p;
+        final elem = ts.p;
 
-        expect(bs4, isNotNull);
+        expect(elem, isNotNull);
         expect(
-          bs4!.outerHtml,
+          elem!.outerHtml,
           equals("<p class=\"title\"><b>The Dormouse's story</b></p>"),
         );
       });
@@ -41,92 +41,92 @@ void main() {
 
     group('innerHtml', () {
       test('finds innerHtml', () {
-        final bs4 = bs.p;
+        final elem = ts.p;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.innerHtml, equals("<b>The Dormouse's story</b>"));
+        expect(elem, isNotNull);
+        expect(elem!.innerHtml, equals("<b>The Dormouse's story</b>"));
       });
 
       test('does not find innerHtml (empty string)', () {
-        bs = TypedSoup.fragment(html_placeholder_empty);
-        final bs4 = bs.findFirstAny();
+        ts = TypedSoup.fragment(html_placeholder_empty);
+        final elem = ts.findFirstAny();
 
-        expect(bs4, isNotNull);
-        expect(bs4!.innerHtml, equals(''));
+        expect(elem, isNotNull);
+        expect(elem!.innerHtml, equals(''));
       });
     });
 
     group('className', () {
       test('finds className', () {
-        final bs4 = bs.p;
+        final elem = ts.p;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.className, 'title');
+        expect(elem, isNotNull);
+        expect(elem!.className, 'title');
       });
 
       test('does not find className (empty string)', () {
-        final bs4 = bs.title;
+        final elem = ts.title;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.className, '');
+        expect(elem, isNotNull);
+        expect(elem!.className, '');
       });
     });
 
     group('id', () {
       test('finds id', () {
-        final bs4 = bs.body?.a;
+        final elem = ts.body?.a;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.id, 'link1');
+        expect(elem, isNotNull);
+        expect(elem!.id, 'link1');
       });
 
       test('does not find id (empty string)', () {
-        final bs4 = bs.title;
+        final elem = ts.title;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.id, '');
+        expect(elem, isNotNull);
+        expect(elem!.id, '');
       });
     });
 
     group('operator [], for attribute value getter', () {
       test('finds attribute value', () {
-        final attr = bs.body?.a?['href'];
+        final attr = ts.body?.a?['href'];
 
         expect(attr, isNotNull);
         expect(attr!, equals('http://example.com/elsie'));
       });
 
       test('does not find attribute value', () {
-        final attr = bs.body?.a?['style'];
+        final attr = ts.body?.a?['style'];
         expect(attr, isNull);
       });
     });
 
     group('hasAttr', () {
       test('finds attribute', () {
-        final bs4 = bs.body?.a;
+        final elem = ts.body?.a;
 
-        expect(bs4, isNotNull);
-        expect(bs4!.hasAttr('href'), isTrue);
-        expect(bs4.hasAttr('class'), isTrue);
-        expect(bs4.hasAttr('id'), isTrue);
-        expect(bs4.hasAttr('article'), isFalse);
+        expect(elem, isNotNull);
+        expect(elem!.hasAttr('href'), isTrue);
+        expect(elem.hasAttr('class'), isTrue);
+        expect(elem.hasAttr('id'), isTrue);
+        expect(elem.hasAttr('article'), isFalse);
       });
 
       test('does not find attribute', () {
-        final bs4 = bs.title;
-        expect(bs4?.hasAttr('name'), isFalse);
+        final elem = ts.title;
+        expect(elem?.hasAttr('name'), isFalse);
       });
     });
 
     group('getAttrValue', () {
       test('finds attribute', () {
-        bs = TypedSoup.fragment('<b id="boldest">bold</b>');
-        final bs4 = bs.findFirstAny();
+        ts = TypedSoup.fragment('<b id="boldest">bold</b>');
+        final elem = ts.findFirstAny();
 
-        expect(bs4, isNotNull);
-        expect(bs4!.getAttrValue('id'), equals('boldest'));
-        expect(bs4['id'], equals('boldest'));
+        expect(elem, isNotNull);
+        expect(elem!.getAttrValue('id'), equals('boldest'));
+        expect(elem['id'], equals('boldest'));
       });
     });
   });

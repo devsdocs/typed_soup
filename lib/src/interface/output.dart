@@ -14,7 +14,7 @@ abstract class IOutput {
   ///
   /// The **goal** of [prettify] is to **help you visually understand the structure**
   /// of the documents you work with.
-  String prettify();
+  String prettify({String indent = '  '});
 
   /// {@template output_getText}
   /// Returns the text of an element.

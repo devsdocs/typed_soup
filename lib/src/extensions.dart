@@ -6,7 +6,7 @@ import 'ts_element.dart';
 extension ElementExt on Element {
   /// Returns [TsElement] from the [Element] ([which comes from
   /// `html` Dart package](https://pub.dev/packages/html)).
-  TsElement get bs4 => TsElement(this);
+  TsElement get ts => TsElement(this);
 }
 
 /// Extensions for [Node].

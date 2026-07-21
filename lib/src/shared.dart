@@ -14,8 +14,8 @@ final _nthChildFormulaRegex = RegExp(r'^\s*([-+]?\d*)?n\s*([-+]\s*\d+)?\s*$');
 class Shared extends Tags implements ITreeSearcher, IOutput {
   @override
   TsElement? findFirstAny() =>
-      ((element ?? doc).querySelector('html') as Element?)?.bs4 ??
-      ((element ?? doc).querySelector('*') as Element?)?.bs4;
+      ((element ?? doc).querySelector('html') as Element?)?.ts ??
+      ((element ?? doc).querySelector('*') as Element?)?.ts;
 
   @override
   TsElement? find(
@@ -32,18 +32,18 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
           selector.contains(':first-child')) {
         return findAll('', selector: selector).firstOrNull;
       }
-      return ((element ?? doc).querySelector(selector) as Element?)?.bs4;
+      return ((element ?? doc).querySelector(selector) as Element?)?.ts;
     }
     if (id == null && class_ == null && regex == null && string == null) {
       bool anyTag = _isAnyTag(name);
       bool validTag = _isValidTag(name);
       if (attrs == null && !anyTag && validTag) {
-        return ((element ?? doc).querySelector(name) as Element?)?.bs4;
+        return ((element ?? doc).querySelector(name) as Element?)?.ts;
       }
       final cssSelector = ((!validTag || anyTag) && (attrs == null))
           ? '*'
           : _selectorBuilder(tagName: validTag ? name : '*', attrs: attrs!);
-      return ((element ?? doc).querySelector(cssSelector) as Element?)?.bs4;
+      return ((element ?? doc).querySelector(cssSelector) as Element?)?.ts;
     }
     return findAll(
       name,
@@ -98,7 +98,7 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
 
       final elements =
           ((element ?? doc).querySelectorAll(cleanSelector) as List<Element>)
-              .map((e) => e.bs4)
+              .map((e) => e.ts)
               .toList();
 
       if (hasFirstChild) {
@@ -125,7 +125,7 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
     if (attrs == null && !anyTag && validTag) {
       final elements =
           ((element ?? doc).querySelectorAll(name) as List<Element>)
-              .map((e) => e.bs4)
+              .map((e) => e.ts)
               .toList();
       final filtered = _filterResults(
         allResults: elements.toList(),
@@ -141,7 +141,7 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
         : _selectorBuilder(tagName: validTag ? name : '*', attrs: attrs!);
     final elements =
         ((element ?? doc).querySelectorAll(cssSelector) as List<Element>).map(
-          (e) => e.bs4,
+          (e) => e.ts,
         );
 
     final filtered = _filterResults(
@@ -542,70 +542,12 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
   }
 
   @override
-  String prettify() {
-    final topElement = findFirstAny()?.clone(true);
-    if (topElement == null ||
-        topElement.element == null ||
-        topElement.nextParsed == null) {
-      return _bs4.outerHtml;
-    }
-
-    final strBuffer = StringBuffer();
-    void indent(int? indentation) {
-      for (int i = 0; i < (indentation ?? 1); i++) {
-        strBuffer.write(' ');
-      }
-    }
-
-    final topElementData = _TagDataExtractor.parseElement(topElement.element!);
-    final topClosingTag = topElementData.closingTag;
-    strBuffer
-      ..write(topElementData.startingTag)
-      ..write('\n');
-
-    final lists = <_TagDataExtractor>[];
-    if (topElement.element!.hasChildNodes()) {
-      final children = topElement.element!.nodes;
-
-      var spaces = 1;
-      for (final child in children) {
-        spaces = 1;
-        final current = _TagDataExtractor.parseNode(child, indentation: spaces);
-        lists.add(current);
-
-        final descendants = child.nodes
-            .map((node) {
-              spaces++;
-              return _recursiveNodeExtractorSearch(node, indentation: spaces);
-            })
-            .expand((e) => e)
-            .toList();
-        lists.addAll(descendants);
-      }
-    }
-
-    _TagDataExtractor? prevNode;
-    for (final item in lists) {
-      indent(item.indentation);
-      strBuffer
-        ..write(item.isElement ? item.startingTag : item.node.data)
-        ..write('\n');
-
-      if (prevNode != null && prevNode.isElement && prevNode != item) {
-        indent(prevNode.indentation);
-        strBuffer
-          ..write(prevNode.closingTag)
-          ..write('\n');
-      }
-
-      prevNode = item;
-    }
-
-    strBuffer.write(topClosingTag);
-    return strBuffer.toString();
+  String prettify({String indent = '  '}) {
+    final target = element ?? doc;
+    return _prettifyNode(target, 0, indent);
   }
 
-  TsElement get _bs4 => element != null ? element!.bs4 : findFirstAny()!;
+  TsElement get _bs4 => element != null ? element!.ts : findFirstAny()!;
 }
 
 String _selectorBuilder({
@@ -729,54 +671,6 @@ List<E> _limitedList<E>(List<E> list, int? limit) {
   return limit == null ? list : list.take(limit).toList();
 }
 
-class _TagDataExtractor {
-  const _TagDataExtractor._({
-    required this.node,
-    this.startingTag = '',
-    this.closingTag = '',
-    this.indentation = 1,
-  });
-
-  final Node node;
-  final String startingTag;
-  final String closingTag;
-  final int indentation;
-
-  bool get isElement => node is Element;
-
-  factory _TagDataExtractor.parseNode(Node node, {int? indentation}) {
-    return node is Element
-        ? _TagDataExtractor.parseElement(node, indentation: indentation)
-        : _TagDataExtractor._(node: node, indentation: indentation ?? 1);
-  }
-
-  factory _TagDataExtractor.parseElement(Element element, {int? indentation}) {
-    final topElement = element.clone(false);
-    final closingTag = '</${topElement.localName}>';
-    final startingTag = topElement.outerHtml.replaceFirst(closingTag, '');
-    return _TagDataExtractor._(
-      node: element,
-      startingTag: startingTag,
-      closingTag: closingTag,
-      indentation: indentation ?? 1,
-    );
-  }
-
-  @override
-  String toString() =>
-      '_TagDataExtractor{node: $node, startingTag: $startingTag, closingTag: $closingTag, indentation: $indentation}';
-}
-
-Iterable<_TagDataExtractor> _recursiveNodeExtractorSearch(
-  Node node, {
-  int? indentation,
-}) sync* {
-  yield _TagDataExtractor.parseNode(node, indentation: indentation ?? 1);
-  for (final e in node.nodes) {
-    yield* _recursiveNodeExtractorSearch(e, indentation: indentation ?? 1);
-  }
-}
-
 bool _isNthChildMatch(TsElement bs4, String expression) {
   expression = expression.trim();
   final parent = bs4.element?.parentNode;
@@ -836,4 +730,100 @@ bool _isNthChildMatch(TsElement bs4, String expression) {
   }
 
   return false;
+}
+
+const Set<String> _voidElements = {
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+};
+
+String _prettifyNode(Node node, int indentLevel, String indentUnit) {
+  final prefix = indentUnit * indentLevel;
+
+  if (node is Document || node is DocumentFragment) {
+    final buffer = StringBuffer();
+    for (final child in node.nodes) {
+      final res = _prettifyNode(child, indentLevel, indentUnit);
+      if (res.isNotEmpty) {
+        if (buffer.isNotEmpty) buffer.write('\n');
+        buffer.write(res);
+      }
+    }
+    return buffer.toString();
+  }
+
+  if (node is DocumentType) {
+    return '$prefix$node';
+  }
+
+  if (node is Comment) {
+    final commentText = node.data ?? '';
+    return '$prefix<!--$commentText-->';
+  }
+
+  if (node is Text) {
+    final text = node.text.trim();
+    if (text.isEmpty) return '';
+    return '$prefix$text';
+  }
+
+  if (node is Element) {
+    final tag = node.localName ?? '';
+    final isVoid = _voidElements.contains(tag.toLowerCase());
+
+    final clone = node.clone(false);
+    final outerHtml = clone.outerHtml;
+    final String startingTag;
+    final closingTag = '</$tag>';
+
+    if (isVoid) {
+      startingTag = outerHtml;
+    } else if (outerHtml.endsWith('></$tag>')) {
+      startingTag = outerHtml.substring(0, outerHtml.length - (tag.length + 3));
+    } else {
+      startingTag = outerHtml;
+    }
+
+    if (isVoid) {
+      return '$prefix$startingTag';
+    }
+
+    // Check if element contains ONLY a single text child (and no elements/comments)
+    if (node.nodes.length == 1 && node.nodes.first is Text) {
+      final textContent = (node.nodes.first as Text).text.trim();
+      if (!textContent.contains('\n') &&
+          (startingTag.length + textContent.length + closingTag.length <=
+              100)) {
+        return '$prefix$startingTag$textContent$closingTag';
+      }
+    }
+
+    final childrenLines = <String>[];
+    for (final child in node.nodes) {
+      final res = _prettifyNode(child, indentLevel + 1, indentUnit);
+      if (res.isNotEmpty) {
+        childrenLines.add(res);
+      }
+    }
+
+    if (childrenLines.isEmpty) {
+      return '$prefix$startingTag\n$prefix$closingTag';
+    }
+
+    return '$prefix$startingTag\n${childrenLines.join('\n')}\n$prefix$closingTag';
+  }
+
+  return '$prefix${node.toString().trim()}';
 }

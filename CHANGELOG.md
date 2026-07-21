@@ -1,3 +1,15 @@
+## 1.0.2
+
+- **Prettify Enhancements**: Rewrote `prettify()` with a recursive HTML formatter that outputs clean, 2-space indented HTML trees; added optional `indent` parameter (`prettify({String indent = '  '})`).
+- **Standardized Naming**: Updated variable names to `ts` across all code examples, tests, and documentation.
+- **Extension Getter**: Added `Element.ts` extension property getter (`Element.ts`).
+- **Documentation & Examples**:
+  - Replaced external doc links in README with verified inline Dart code examples.
+  - Added documentation on in-place tree mutations and exporting modified HTML via `ts.toString()` / `ts.prettify()`.
+  - Expanded `example/main.dart` with a complete API feature demonstration.
+- **Automated Verification**: Added automated README example test generator (`tool/generate_examples.dart`) and verification suite (`test/readme_examples_test.dart`).
+- **Package Distribution**: Added and configured `.gitignore` and `.pubignore` files for clean package publishing.
+
 ## 1.0.1
 
 - Updated repository URLs and badges in documentation and package metadata.

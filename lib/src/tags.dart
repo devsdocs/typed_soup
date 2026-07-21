@@ -31,7 +31,7 @@ class Tags implements ITags {
   }
 
   TsElement? _findFirst(String tagName) =>
-      ((element ?? doc).querySelector(tagName) as Element?)?.bs4;
+      ((element ?? doc).querySelector(tagName) as Element?)?.ts;
 
   @override
   TsElement? get html => _findFirst('html');

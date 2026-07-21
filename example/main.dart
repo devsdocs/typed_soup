@@ -2,7 +2,7 @@
 
 import 'package:typed_soup/typed_soup.dart';
 
-const html_doc = """
+const html_doc = '''
 <html>
    <head>
       <title>The Dormouse's story</title>
@@ -12,64 +12,69 @@ const html_doc = """
       <p class="story">Once upon a time there were three little sisters; and their names were
          <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
          <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
-         <a class="sister" id="link3">Tillie</a>;
+         <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
          and they lived at the bottom of a well.
-         <a href="unknown">Some name</a>
       </p>
       <p class="story">...</p>
    </body>
 </html>
-""";
+''';
 
 void main() {
-  // 1. parse a document
-  TypedSoup bs = TypedSoup(
-    html_doc,
-  ); // use TypedSoup.fragment(html_doc_string) if you parse a part of html
+  print('--- 1. Parsing HTML ---');
+  final ts = TypedSoup(html_doc);
+  final tsFrag = TypedSoup.fragment(
+    '<div><span class="note">Fragment</span></div>',
+  );
+  print('Title from document: ${ts.title?.string}');
+  print('Span from fragment: ${tsFrag.find('span')?.string}');
 
-  // 2. navigate quickly to any element
-  print(
-    bs.body!.a!.toString(),
-  ); // get String representation of this element, same as outerHtml, finds: "<a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>"
-  bs.find(
-    'p',
-    class_: 'story',
-  ); // finds first element with html tag "p" and which has "class" attribute with value "story"
-  bs.findAll(
-    'a',
-    attrs: {'class': true},
-  ); // finds all elements with html tag "a" and which have defined "class" attribute with whatever value
-  bs.find('*', id: 'link1'); // find by id
-  bs.find(
-    '*',
-    regex: r'^b',
-  ); // find any element which tag starts with "b", for example: body, b, ...
-  bs.find(
-    'p',
-    string: r'^Article #\d*',
-  ); // find "p" element which text starts with "Article #[number]"
-  bs.find(
-    'a',
-    attrs: {'href': 'http://example.com/elsie'},
-  ); // finds by "href" attribute
+  print('\n--- 2. Navigating the Tree ---');
+  print('Direct tag navigation: ${ts.body?.p?.b?.string}');
+  print('Parent tag: ${ts.find('a', id: 'link1')?.parent?.name}');
+  print('Next sibling: ${ts.find('a', id: 'link1')?.nextSibling?.id}');
+  print('Children tag names: ${ts.head?.children.map((e) => e.name).toList()}');
 
-  // 3. perform any other actions for the navigated element
-  TsElement bs4 = bs
-      .body!
-      .p!; // quickly with tags, finds and navigates to: "<p class="title"><b>The Dormouse's story</b></p>"
-  bs4.name; // get tag name, finds: "p"
-  bs4.string; // get text, finds: "The Dormouse's story";
-  bs4.innerHtml; // get html elements inside the element, finds: "<b>The Dormouse's story</b>"
-  bs4.className; // get class attribute value, finds: "title"
-  bs4['id']; // get class attribute value, finds: null
-  bs4['class'] =
-      'board'; // change class attribute value from 'title' to 'board'
+  print('\n--- 3. Searching the Tree ---');
+  // Find single element
+  final titleP = ts.find('p', class_: 'title');
+  print('First title paragraph: ${titleP?.outerHtml}');
 
-  TsElement bs4Alt = bs.find(
-    'p',
-    attrs: {'class': 'story'},
-  )!; // with query func you can specify attributes
-  bs4.replaceWith(bs4Alt); // replace with other element
-  bs4Alt
-      .children; // get all element's children elements, finds: list with four "a" elements
+  // Find all matching elements
+  final sisterLinks = ts.findAll('a', class_: 'sister');
+  print('Sister link IDs: ${sisterLinks.map((e) => e.id).toList()}');
+
+  // CSS Selectors
+  final firstLink = ts.select_one('p.story > a#link1');
+  print('CSS selector match: ${firstLink?.string}');
+
+  print('\n--- 4. Modifying the Tree ---');
+  final link1 = ts.find('a', id: 'link1')!;
+
+  // Modify attributes and contents (mutates tree in-place)
+  link1['class'] = 'sister active';
+  link1.setAttr('data-status', 'verified');
+  link1.string = 'Elsie (Updated)';
+  print('Modified element: ${link1.outerHtml}');
+
+  // Create and append a new element
+  final badge = TypedSoup.newTag(
+    'span',
+    attrs: {'class': 'badge'},
+    string: ' [New]',
+  );
+  titleP?.append(badge);
+  print('Appended element: ${titleP?.outerHtml}');
+
+  print('\n--- 5. Getting Complete Modified HTML ---');
+  // All modifications mutate the underlying tree in place.
+  // To get the complete modified HTML string:
+
+  // Method 1: ts.toString() or ts.outerHtml (gives full HTML string)
+  print('--- Full Modified HTML (toString) ---');
+  print(ts.toString());
+
+  // Method 2: ts.prettify() (gives formatted full HTML string)
+  print('\n--- Prettified Modified HTML (prettify) ---');
+  print(ts.prettify());
 }

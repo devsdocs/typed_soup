@@ -82,7 +82,7 @@ class TsElement extends Shared
   set id(String value) => _element.id = value;
 
   @override
-  List<TsElement> get children => _element.children.map((e) => e.bs4).toList();
+  List<TsElement> get children => _element.children.map((e) => e.ts).toList();
 
   @override
   List<TsElement> get contents => children;
@@ -90,7 +90,7 @@ class TsElement extends Shared
   @override
   List<TsElement> get descendants {
     return _element.children
-        .map((e) => recursiveSearch(e.bs4))
+        .map((e) => recursiveSearch(e.ts))
         .expand((e) => e)
         .toList();
   }
@@ -101,7 +101,7 @@ class TsElement extends Shared
   }
 
   @override
-  TsElement? get parent => _element.parent?.bs4;
+  TsElement? get parent => _element.parent?.ts;
 
   @override
   List<TsElement> get parents {
@@ -115,7 +115,7 @@ class TsElement extends Shared
   }
 
   @override
-  TsElement? get previousSibling => _element.previousElementSibling?.bs4;
+  TsElement? get previousSibling => _element.previousElementSibling?.ts;
 
   @override
   List<TsElement> get previousSiblings {
@@ -129,7 +129,7 @@ class TsElement extends Shared
   }
 
   @override
-  TsElement? get nextSibling => _element.nextElementSibling?.bs4;
+  TsElement? get nextSibling => _element.nextElementSibling?.ts;
 
   @override
   List<TsElement> get nextSiblings {
@@ -453,7 +453,7 @@ class TsElement extends Shared
   void clear() => element = _element.clone(false);
 
   @override
-  TsElement extract() => (_element.remove() as Element).bs4;
+  TsElement extract() => (_element.remove() as Element).ts;
 
   @override
   void decompose() {
@@ -466,7 +466,7 @@ class TsElement extends Shared
 
   @override
   TsElement replaceWith(TsElement otherElement) =>
-      (_element.replaceWith(otherElement._element) as Element).bs4;
+      (_element.replaceWith(otherElement._element) as Element).ts;
 
   @override
   TsElement replaceWithChildren() {
@@ -559,7 +559,7 @@ class TsElement extends Shared
   }
 
   @override
-  TsElement clone(bool deep) => (_element.clone(deep)).bs4;
+  TsElement clone(bool deep) => (_element.clone(deep)).ts;
 
   @override
   String? operator [](String name) => _element.attributes[name];

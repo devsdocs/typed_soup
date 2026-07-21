@@ -1,0 +1,19 @@
+# Rules for dart pub publish packaging
+
+# CI / CD configuration
+.github/
+codecov.yml
+
+# Internal maintenance tools
+tool/
+
+# Development tools & IDEs
+.idea/
+.vscode/
+*.iml
+
+# Test & coverage output
+coverage/
+.dart_tool/
+.packages
+build/

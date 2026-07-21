@@ -117,54 +117,25 @@ void main() {
         );
 
         expect(
-          bs.prettify(),
-          _trimLeadingWhitespace('''
-          <b>
-           <!--Hey, buddy. Want to buy a used parser?-->
-          </b>'''),
+          bs.prettify(indent: ' '),
+          '<b>\n <!--Hey, buddy. Want to buy a used parser?-->\n</b>',
         );
         expect(
           bs.prettify(),
-          '<b>\n <!--Hey, buddy. Want to buy a used parser?-->\n</b>',
+          '<b>\n  <!--Hey, buddy. Want to buy a used parser?-->\n</b>',
         );
       });
 
       test('prettifies, example #2', () {
-        bs = TypedSoup.fragment('<a><b>text1</b><c>text2</c></b></a>');
+        bs = TypedSoup.fragment('<a><b>text1</b><c>text2</c></a>');
 
+        expect(bs.prettify(), '<a>\n  <b>text1</b>\n  <c>text2</c>\n</a>');
         expect(
-          bs.prettify(),
-          _trimLeadingWhitespace('''
-          <a>
-           <b>
-            text1
-           </b>
-           <c>
-            text2
-           </c>
-          </a>'''),
-        );
-        expect(
-          bs.prettify(),
-          '<a>\n <b>\n  text1\n </b>\n <c>\n  text2\n </c>\n</a>',
+          bs.prettify(indent: ' '),
+          '<a>\n <b>text1</b>\n <c>text2</c>\n</a>',
         );
       });
     });
   });
 }
 
-// credits @Irhn: https://github.com/dart-lang/language/issues/559#issuecomment-528812035
-String _trimLeadingWhitespace(String text) {
-  final commonLeadingWhitespaceRE = RegExp(
-    r"([ \t]+)(?![^]*^(?!\1))",
-    multiLine: true,
-  );
-  var commonWhitespace = commonLeadingWhitespaceRE.matchAsPrefix(text);
-  if (commonWhitespace != null) {
-    return text.replaceAll(
-      RegExp("^${commonWhitespace[1]}", multiLine: true),
-      "",
-    );
-  }
-  return text;
-}
