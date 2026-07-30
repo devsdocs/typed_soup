@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/typed_soup.svg)](https://pub.dev/packages/typed_soup)
 ![tests](https://github.com/devsdocs/typed_soup/actions/workflows/main.yml/badge.svg)
-[![codecov](https://codecov.io/gh/devsdocs/typed_soup/branch/master/graph/badge.svg)](https://codecov.io/gh/devsdocs/typed_soup)
+[![codecov](https://codecov.io/gh/devsdocs/typed_soup/branch/main/graph/badge.svg)](https://codecov.io/gh/devsdocs/typed_soup)
 
 Dart native package inspired by Beautiful Soup 4 Python library. Provides easy ways of navigating, searching, and modifying the HTML tree.
 
