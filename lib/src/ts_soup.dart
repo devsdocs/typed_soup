@@ -5,6 +5,11 @@ import 'package:typed_soup/src/extensions.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
+import 'dart:convert';
+import 'dart:isolate';
+import 'package:http/http.dart' as http;
+import 'package:typed_soup/src/xml_builder.dart';
+import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
 import 'shared.dart';
 
 /// {@template bs_soup}
@@ -61,6 +66,23 @@ class TypedSoup extends Shared {
     doc = parseFragment(html_doc);
   }
 
+  /// Parses an XML string preserving case-sensitivity and structure.
+  TypedSoup.xml(String xml_doc) {
+    doc = parseXmlToHtmlDocument(xml_doc);
+  }
+
+  /// Fetches an HTML document from the provided [url] and parses it.
+  static Future<TypedSoup> fromUrl(String url) async {
+    final response = await http.get(Uri.parse(url));
+    return TypedSoup(response.body);
+  }
+
+  /// Parses HTML from bytes, decoding with UTF-8 and allowing malformed characters.
+  TypedSoup.fromBytes(List<int> bytes) {
+    final htmlStr = utf8.decode(bytes, allowMalformed: true);
+    doc = parse(htmlStr);
+  }
+
   /// {@macro tree_modifier_newTag}
   static TsElement newTag(
     String? name, {
@@ -73,6 +95,30 @@ class TypedSoup extends Shared {
     }
     newElement.text = string;
     return newElement.ts;
+  }
+
+  /// Evaluates an XPath expression on this document and returns matching elements.
+  List<TsElement> xpath(String query) {
+    try {
+      final xp = HtmlXPath.html(doc.outerHtml);
+      final result = xp.query(query);
+      return result.nodes
+          .map((n) => n.node)
+          .whereType<Element>()
+          .map((e) => e.ts)
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// Batch parses a list of HTML strings concurrently using Dart Isolates.
+  /// This prevents the main thread from blocking when processing massive numbers of pages.
+  static Future<List<TypedSoup>> batch(List<String> htmlDocuments) async {
+    final futures = htmlDocuments.map((html) {
+      return Isolate.run(() => TypedSoup(html));
+    });
+    return Future.wait(futures);
   }
 
   @override

@@ -1,13 +1,19 @@
 name: typed_soup
 description: Dart native package inspired by Beautiful Soup 4 Python library. Provides easy ways of navigating, searching, and modifying the HTML tree.
 homepage: https://github.com/devsdocs/typed_soup
-version: 1.0.3
+version: 1.1.0
 
 environment:
   sdk: ^3.12.0
 
 dependencies:
   html: ^0.15.6
+  html2md: ^1.3.2
+  http: ^1.6.0
+  sanitize_html: ^2.2.0
+  xml: ^7.0.1
+  xpath_selector: ^3.0.2
+  xpath_selector_html_parser: ^3.0.1
 
 dev_dependencies:
   lints: ^6.1.0

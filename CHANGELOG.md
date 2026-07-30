@@ -1,5 +1,12 @@
-## 1.0.3
+## 1.1.0
 
+- **XPath Support**: Added `ts.xpath()` and `tsElement.xpath()` for evaluating standard XPath expressions on documents and specific sub-elements.
+- **Sanitization & Markdown**: Added `element.sanitize()` to deeply clean elements of XSS vulnerabilities, and `element.toMarkdown()` to convert HTML trees into clean markdown text.
+- **JSON Schema Extraction**: Added `extractData(Map<String, String> schema)` to easily extract data into a Map based on CSS selectors (including `@attr` syntax for extracting attributes).
+- **Path Generation**: Added `element.cssPath()` and `element.xpathPath()` to generate unique paths to specific nodes from the root document.
+- **Concurrent Batch Processing**: Added `TypedSoup.batch(List<String> htmlDocuments)` to run high-performance parsing concurrently in background isolates, keeping the main thread free.
+
+## 1.0.3
 - **Direct Node Text**: Added `element.ownText` and `element.ownTextTrimmed` to extract text belonging solely to the element directly (excluding nested child elements).
 - **Form Data Serialization**: Added `form.toFormData()` to serialize form controls (`<input>`, `<select>`, `<textarea>`, `<button>`) into `Map<String, String>`.
 - **List Collection Extensions**: Added `TsElementListExt` for easy mapping and filtering (`.hrefs`, `.srcs`, `.texts`, `.trimmedTexts`, `.withClass()`, `.withAttr()`).

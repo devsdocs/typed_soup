@@ -86,9 +86,21 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
         }
       }
 
+      final containsMatch = RegExp(
+        r':contains\((.*?)\)',
+      ).firstMatch(cleanSelector);
+      if (containsMatch != null) {
+        cleanSelector = cleanSelector.replaceAll(containsMatch.group(0)!, '');
+      }
+
+      final hasMatch = RegExp(r':has\((.*?)\)').firstMatch(cleanSelector);
+      if (hasMatch != null) {
+        cleanSelector = cleanSelector.replaceAll(hasMatch.group(0)!, '');
+      }
+
       cleanSelector = cleanSelector.trim();
       // If selector becomes empty (matches *) or ends with a combinator such as
-      // "div >" after removing :nth-child, normalize it to include the
+      // "div >" after removing pseudo-classes, normalize it to include the
       // universal selector.
       if (cleanSelector.isEmpty) {
         cleanSelector = '*';
@@ -116,6 +128,28 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
         return elements.where((e) {
           return _isNthChildMatch(e, nthChildExpression);
         }).toList();
+      }
+
+      final containsFilterMatch = RegExp(
+        r':contains\((.*?)\)',
+      ).firstMatch(selector);
+      if (containsFilterMatch != null) {
+        final textToFind = containsFilterMatch
+            .group(1)
+            ?.replaceAll(RegExp(r'''['"]'''), '');
+        if (textToFind != null) {
+          return elements.where((e) => e.text.contains(textToFind)).toList();
+        }
+      }
+
+      final hasFilterMatch = RegExp(r':has\((.*?)\)').firstMatch(selector);
+      if (hasFilterMatch != null) {
+        final selectorToFind = hasFilterMatch.group(1);
+        if (selectorToFind != null) {
+          return elements
+              .where((e) => e.element?.querySelector(selectorToFind) != null)
+              .toList();
+        }
       }
 
       return elements;
@@ -481,6 +515,38 @@ class Shared extends Tags implements ITreeSearcher, IOutput {
     });
 
     return _limitedList(filtered.toList(), limit);
+  }
+
+  /// Extracts data into a structured Map based on a schema.
+  /// Keys are your desired field names, values are CSS selectors.
+  /// Use `@attr` syntax in selectors to extract specific attributes (e.g., `a.link@href`).
+  Map<String, String?> extractData(Map<String, String> schema) {
+    final result = <String, String?>{};
+    for (final entry in schema.entries) {
+      final key = entry.key;
+      final selector = entry.value;
+
+      if (selector.contains('@')) {
+        final parts = selector.split('@');
+        final elementSelector = parts[0];
+        final attr = parts.length > 1 ? parts[1] : '';
+        // Since `this` is `Shared`, it could be `TypedSoup` or `TsElement`.
+        // If `elementSelector` is empty, query on `this`.
+        final element = elementSelector.isEmpty
+            ? this
+            : select_one(elementSelector);
+
+        if (element != null && element.element != null) {
+          result[key] = element.element!.attributes[attr];
+        } else {
+          result[key] = null;
+        }
+      } else {
+        final element = select_one(selector);
+        result[key] = element?.text;
+      }
+    }
+    return result;
   }
 
   @override

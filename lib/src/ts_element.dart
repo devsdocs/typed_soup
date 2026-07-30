@@ -2,7 +2,9 @@ import 'dart:collection';
 
 import 'package:typed_soup/typed_soup.dart';
 import 'package:html/dom.dart';
-
+import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
+import 'package:sanitize_html/sanitize_html.dart' as sanitize_pkg;
+import 'package:html2md/html2md.dart' as html2md;
 import 'helpers.dart';
 import 'interface/interface.dart';
 import 'shared.dart';
@@ -765,6 +767,117 @@ class TsElement extends Shared
 
   @override
   String toString() => outerHtml;
+
+  /// Sanitizes the element by cleaning its outer HTML using the sanitize_html package.
+  /// Replaces the current element with the sanitized content.
+  void sanitize() {
+    final cleanHtml = sanitize_pkg.sanitizeHtml(outerHtml);
+    final tempDoc = TypedSoup.fragment(cleanHtml);
+    if (tempDoc.doc.nodes.isNotEmpty) {
+      if (tempDoc.doc.nodes.first is Element) {
+        final sanitizedElement = (tempDoc.doc.nodes.first as Element);
+        _element.nodes.clear();
+        _element.nodes.addAll(sanitizedElement.nodes.toList());
+        _element.attributes.clear();
+        _element.attributes.addAll(sanitizedElement.attributes);
+      }
+    } else {
+      decompose();
+    }
+  }
+
+  /// Evaluates an XPath expression on this element and returns matching elements.
+  List<TsElement> xpath(String query) {
+    try {
+      final xp = HtmlXPath.node(_element);
+      final result = xp.query(query);
+      return result.nodes
+          .map((n) => n.node)
+          .whereType<Element>()
+          .map((e) => e.ts)
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// Converts the element's HTML to Markdown using the html2md package.
+  String toMarkdown() {
+    return html2md.convert(outerHtml);
+  }
+
+  /// Generates a unique CSS selector path for this element.
+  String cssPath() {
+    if (id.isNotEmpty) return '#$id';
+    final path = <String>[];
+    Element? current = _element;
+
+    while (current != null) {
+      if (current.id.isNotEmpty) {
+        path.add('#${current.id}');
+        break;
+      }
+
+      String selector = current.localName ?? '';
+      final parent = current.parent;
+      if (parent != null) {
+        final index = parent.children.indexOf(current) + 1;
+        if (parent.children.length > 1) {
+          selector += ':nth-child($index)';
+        }
+      }
+
+      path.add(selector);
+      current = parent;
+    }
+    return path.reversed.join(' > ');
+  }
+
+  /// Generates a unique XPath for this element.
+  String xpathPath() {
+    if (id.isNotEmpty) {
+      return '//${_element.localName}[@id="$id"]';
+    }
+    final path = <String>[];
+    Element? current = _element;
+
+    while (current != null) {
+      if (current.id.isNotEmpty) {
+        path.add('/${current.localName}[@id="${current.id}"]');
+        break;
+      }
+
+      String selector = current.localName ?? '';
+      final parent = current.parent;
+      if (parent != null) {
+        int index = 1;
+        int totalSameTag = 0;
+        for (final child in parent.children) {
+          if (child.localName == current.localName) {
+            totalSameTag++;
+            if (child == current) {
+              index = totalSameTag;
+            }
+          }
+        }
+
+        if (totalSameTag > 1) {
+          selector += '[$index]';
+        }
+      }
+
+      path.add(selector);
+      current = parent;
+    }
+
+    var result = path.reversed.join('/');
+    if (path.isNotEmpty && path.last.startsWith('/')) {
+      result = result.replaceFirst('/', '//');
+    } else {
+      result = '/$result';
+    }
+    return result;
+  }
 }
 
 int _getCurrNodeIndex(Node parentNode, Node currentNode) {

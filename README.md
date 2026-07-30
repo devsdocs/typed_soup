@@ -77,9 +77,9 @@ void main() {
 
 ## Parsing HTML
 
-### Document and Fragment Parsing
+### Document, Fragment, and URL/Bytes Parsing
 
-Parse full HTML documents, partial HTML fragments, or wrap standard DOM elements.
+Parse full HTML documents, partial HTML fragments, fetch from URL, or decode from bytes. XML structure and case-sensitivity can also be preserved using `TypedSoup.xml`.
 
 ```dart
 // Parse a full HTML document
@@ -92,9 +92,35 @@ final tsFrag = TypedSoup.fragment('<div class="box"><span>Fragment Content</span
 print(tsFrag.find('span')?.string);
 // Output: Fragment Content
 
+// Fetch and parse directly from a URL
+final tsUrl = await TypedSoup.fromUrl('https://example.com');
+print(tsUrl.title?.string);
+
+// Parse from UTF-8 bytes
+final tsBytes = TypedSoup.fromBytes(utf8EncodedBytesList);
+
+// Parse XML string while preserving case and structure
+final tsXml = TypedSoup.xml('<Root><ChildItem id="1">Text</ChildItem></Root>');
+print(tsXml.findWhere((e) => e.name == 'ChildItem')?.id); // 1
+
 // Or use String extension:
 final tsExt = '<div class="box"><span>Fragment Content</span></div>'.parseSoupFragment();
 print(tsExt.span?.string);
+```
+
+### Concurrent Batch Processing (Isolates)
+
+When processing thousands of HTML pages, parsing synchronously can block the main thread. Use `TypedSoup.batch()` to distribute parsing across multiple background Isolates.
+
+```dart
+final htmlPages = ['<div>Page 1</div>', '<div>Page 2</div>', '<div>Page 3</div>'];
+
+// Automatically spawns isolates and parses concurrently 
+final documents = await TypedSoup.batch(htmlPages);
+
+for (final ts in documents) {
+  print(ts.div?.string);
+}
 ```
 
 ### Direct Tag Collections and Property Accessors
@@ -372,6 +398,57 @@ print(link1?.string);
 final firstP = ts.select_one('p:first-child');
 print(firstP?.className);
 // Output: title
+
+// Custom pseudo-classes :contains and :has
+final hasLacie = ts.select('a:contains(Lacie)'); // Finds elements containing specific text
+final parentOfLacie = ts.select('p:has(#link2)'); // Finds parents having specific descendants
+```
+
+### XPath Queries
+
+Query the document or elements using standard XPath expressions.
+
+```dart
+final ts = TypedSoup(htmlDoc);
+
+// Query all links inside paragraphs with class 'story'
+final links = ts.xpath('//p[@class="story"]/a');
+print(links.map((e) => e.id).toList());
+// Output: [link1, link2, link3]
+
+// Evaluate xpath on specific element
+final p = ts.find('p', class_: 'story')!;
+final textNodes = p.xpath('./a[@id="link2"]');
+print(textNodes.first.string); // Lacie
+```
+
+### JSON Schema Extraction & Path Generation
+
+Extract deeply nested data into a clean JSON Map using CSS selectors (with `@attr` syntax for attributes), or generate unique CSS/XPath paths for any element.
+
+```dart
+final html = '''
+  <div class="product">
+    <h1 id="title">Awesome Shirt</h1>
+    <span class="price">\$19.99</span>
+    <img src="shirt.png" class="preview" />
+  </div>
+''';
+final ts = TypedSoup(html);
+
+// 1. JSON Schema Extractor
+final data = ts.extractData({
+  'productName': 'h1#title',
+  'cost': '.price',
+  'image': 'img.preview@src' // Use @ to extract an attribute
+});
+print(data); 
+// Output: {productName: Awesome Shirt, cost: $19.99, image: shirt.png}
+
+// 2. CSS and XPath Path Generation
+final img = ts.find('img')!;
+print(img.cssPath());   // Output: div:nth-child(1) > img:nth-child(3)
+print(img.xpathPath()); // Output: //div[1]/img[1]
 ```
 
 ### findFirstAny()
@@ -586,6 +663,38 @@ print(modifiedHtml);
 // Method 2: Prettified HTML output of modified document
 String prettyHtml = ts.prettify();
 print(prettyHtml);
+```
+
+### Memory-Efficient Parsing (SoupStrainer)
+
+For massive HTML documents, you can use `SoupStrainer` to extract only specific tags iteratively, completely bypassing the need to parse the entire DOM tree into memory.
+
+```dart
+final hugeHtml = '<html><body><div>Target</div><p>Ignore</p><div>Match</div></body></html>';
+
+// Only parse and extract <div> tags
+final strainer = SoupStrainer('div');
+for (final div in strainer.strain(hugeHtml)) {
+  print(div.string); // Prints "Target", then "Match"
+}
+```
+
+### Sanitization and Markdown Conversion
+
+You can easily sanitize malicious HTML or convert element trees to basic Markdown.
+
+```dart
+final ts = TypedSoup.fragment('<div><script>alert("XSS")</script><p><b>Hello</b> <a href="x.com">link</a></p></div>');
+final div = ts.div!;
+
+// Sanitize the element in-place to remove malicious tags (like <script>)
+div.sanitize();
+print(div.outerHtml); 
+// Output: <div><p><b>Hello</b> <a href="x.com">link</a></p></div>
+
+// Convert HTML subtree to Markdown
+print(div.toMarkdown());
+// Output: **Hello** [link](x.com)
 ```
 
 ## Additional Information
