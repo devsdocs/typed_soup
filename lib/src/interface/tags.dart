@@ -125,6 +125,90 @@ abstract class ITags {
   /// {@macro tags_common_tag}
   TsElement? get iframe;
 
+  /// {@macro tags_common_tag}
+  TsElement? get strong;
+
+  /// {@macro tags_common_tag}
+  TsElement? get em;
+
+  /// {@macro tags_common_tag}
+  TsElement? get u;
+
+  /// {@macro tags_common_tag}
+  TsElement? get blockquote;
+
+  /// {@macro tags_common_tag}
+  TsElement? get br;
+
+  /// {@macro tags_common_tag}
+  TsElement? get hr;
+
+  /// {@macro tags_common_tag}
+  TsElement? get small;
+
+  /// {@macro tags_common_tag}
+  TsElement? get mark;
+
+  /// {@macro tags_common_tag}
+  TsElement? get sub;
+
+  /// {@macro tags_common_tag}
+  TsElement? get sup;
+
+  /// {@macro tags_common_tag}
+  TsElement? get dt;
+
+  /// {@macro tags_common_tag}
+  TsElement? get dd;
+
+  /// {@macro tags_common_tag}
+  TsElement? get thead;
+
+  /// {@macro tags_common_tag}
+  TsElement? get tbody;
+
+  /// {@macro tags_common_tag}
+  TsElement? get tfoot;
+
+  /// {@macro tags_common_tag}
+  TsElement? get caption;
+
+  /// {@macro tags_common_tag}
+  TsElement? get option;
+
+  /// {@macro tags_common_tag}
+  TsElement? get fieldset;
+
+  /// {@macro tags_common_tag}
+  TsElement? get aside;
+
+  /// {@macro tags_common_tag}
+  TsElement? get figure;
+
+  /// {@macro tags_common_tag}
+  TsElement? get figcaption;
+
+  /// {@macro tags_common_tag}
+  TsElement? get details;
+
+  /// {@macro tags_common_tag}
+  TsElement? get summary;
+
+  /// {@macro tags_common_tag}
+  TsElement? get video;
+
+  /// {@macro tags_common_tag}
+  TsElement? get audio;
+
+  /// {@macro tags_common_tag}
+  TsElement? get script;
+
+  /// {@macro tags_common_tag}
+  TsElement? get style;
+
+  /// {@macro tags_common_tag}
+  TsElement? get linkTag;
+
   // Plural Collection Getters
 
   /// Returns all `<a>` elements down the parse tree.
@@ -165,4 +249,88 @@ abstract class ITags {
 
   /// Returns all heading elements (`<h1>`–`<h6>`) down the parse tree.
   List<TsElement> get headings;
+
+  /// Returns all `<strong>` elements down the parse tree.
+  List<TsElement> get strongs;
+
+  /// Returns all `<em>` elements down the parse tree.
+  List<TsElement> get ems;
+
+  /// Returns all `<u>` elements down the parse tree.
+  List<TsElement> get us;
+
+  /// Returns all `<blockquote>` elements down the parse tree.
+  List<TsElement> get blockquotes;
+
+  /// Returns all `<br>` elements down the parse tree.
+  List<TsElement> get brs;
+
+  /// Returns all `<hr>` elements down the parse tree.
+  List<TsElement> get hrs;
+
+  /// Returns all `<small>` elements down the parse tree.
+  List<TsElement> get smalls;
+
+  /// Returns all `<mark>` elements down the parse tree.
+  List<TsElement> get marks;
+
+  /// Returns all `<sub>` elements down the parse tree.
+  List<TsElement> get subs;
+
+  /// Returns all `<sup>` elements down the parse tree.
+  List<TsElement> get sups;
+
+  /// Returns all `<dt>` elements down the parse tree.
+  List<TsElement> get dts;
+
+  /// Returns all `<dd>` elements down the parse tree.
+  List<TsElement> get dds;
+
+  /// Returns all `<thead>` elements down the parse tree.
+  List<TsElement> get theads;
+
+  /// Returns all `<tbody>` elements down the parse tree.
+  List<TsElement> get tbodys;
+
+  /// Returns all `<tfoot>` elements down the parse tree.
+  List<TsElement> get tfoots;
+
+  /// Returns all `<caption>` elements down the parse tree.
+  List<TsElement> get captions;
+
+  /// Returns all `<option>` elements down the parse tree.
+  List<TsElement> get options;
+
+  /// Returns all `<fieldset>` elements down the parse tree.
+  List<TsElement> get fieldsets;
+
+  /// Returns all `<aside>` elements down the parse tree.
+  List<TsElement> get asides;
+
+  /// Returns all `<figure>` elements down the parse tree.
+  List<TsElement> get figures;
+
+  /// Returns all `<figcaption>` elements down the parse tree.
+  List<TsElement> get figcaptions;
+
+  /// Returns all `<details>` elements down the parse tree.
+  List<TsElement> get detailsList;
+
+  /// Returns all `<summary>` elements down the parse tree.
+  List<TsElement> get summaries;
+
+  /// Returns all `<video>` elements down the parse tree.
+  List<TsElement> get videos;
+
+  /// Returns all `<audio>` elements down the parse tree.
+  List<TsElement> get audios;
+
+  /// Returns all `<script>` elements down the parse tree.
+  List<TsElement> get scripts;
+
+  /// Returns all `<style>` elements down the parse tree.
+  List<TsElement> get styles;
+
+  /// Returns all `<link>` elements down the parse tree.
+  List<TsElement> get linkTags;
 }

@@ -1,3 +1,9 @@
+## 1.2.0
+
+- **Type Safety Improvements**: Refactored internal `_findFirst()` and `_findAll()` helper methods to eliminate dynamic type lookups, improving type safety while maintaining the same functionality and API compatibility.
+- **Expanded Tag Shortcuts**: Added 28 new single tag shortcuts: `strong`, `em`, `u`, `small`, `mark`, `sub`, `sup`, `blockquote`, `br`, `hr`, `dt`, `dd`, `thead`, `tbody`, `tfoot`, `caption`, `option`, `fieldset`, `aside`, `figure`, `figcaption`, `details`, `summary`, `video`, `audio`, `script`, `style`, `linkTag`.
+- **Expanded Tag Collections**: Added 28 new plural collection getters: `strongs`, `ems`, `us`, `smalls`, `marks`, `subs`, `sups`, `blockquotes`, `brs`, `hrs`, `dts`, `dds`, `theads`, `tbodys`, `tfoots`, `captions`, `options`, `fieldsets`, `asides`, `figures`, `figcaptions`, `detailsList`, `summaries`, `videos`, `audios`, `scripts`, `styles`, `linkTags`.
+
 ## 1.1.0
 
 - **XPath Support**: Added `ts.xpath()` and `tsElement.xpath()` for evaluating standard XPath expressions on documents and specific sub-elements.

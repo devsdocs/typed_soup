@@ -30,13 +30,16 @@ class Tags implements ITags {
     }
   }
 
-  TsElement? _findFirst(String tagName) =>
-      ((element ?? doc).querySelector(tagName) as Element?)?.ts;
+  TsElement? _findFirst(String tagName) {
+    final source = element ?? _doc ?? _docFragment;
+    return (source?.querySelector(tagName))?.ts;
+  }
 
-  List<TsElement> _findAll(String selector) =>
-      ((element ?? doc).querySelectorAll(selector) as List<Element>)
-          .map((e) => e.ts)
-          .toList();
+  List<TsElement> _findAll(String selector) {
+    final source = element ?? _doc ?? _docFragment;
+    return (source?.querySelectorAll(selector))?.map((e) => e.ts).toList() ??
+        [];
+  }
 
   @override
   TsElement? get html => _findFirst('html');
@@ -158,6 +161,90 @@ class Tags implements ITags {
   @override
   TsElement? get iframe => _findFirst('iframe');
 
+  @override
+  TsElement? get strong => _findFirst('strong');
+
+  @override
+  TsElement? get em => _findFirst('em');
+
+  @override
+  TsElement? get u => _findFirst('u');
+
+  @override
+  TsElement? get blockquote => _findFirst('blockquote');
+
+  @override
+  TsElement? get br => _findFirst('br');
+
+  @override
+  TsElement? get hr => _findFirst('hr');
+
+  @override
+  TsElement? get small => _findFirst('small');
+
+  @override
+  TsElement? get mark => _findFirst('mark');
+
+  @override
+  TsElement? get sub => _findFirst('sub');
+
+  @override
+  TsElement? get sup => _findFirst('sup');
+
+  @override
+  TsElement? get dt => _findFirst('dt');
+
+  @override
+  TsElement? get dd => _findFirst('dd');
+
+  @override
+  TsElement? get thead => _findFirst('thead');
+
+  @override
+  TsElement? get tbody => _findFirst('tbody');
+
+  @override
+  TsElement? get tfoot => _findFirst('tfoot');
+
+  @override
+  TsElement? get caption => _findFirst('caption');
+
+  @override
+  TsElement? get option => _findFirst('option');
+
+  @override
+  TsElement? get fieldset => _findFirst('fieldset');
+
+  @override
+  TsElement? get aside => _findFirst('aside');
+
+  @override
+  TsElement? get figure => _findFirst('figure');
+
+  @override
+  TsElement? get figcaption => _findFirst('figcaption');
+
+  @override
+  TsElement? get details => _findFirst('details');
+
+  @override
+  TsElement? get summary => _findFirst('summary');
+
+  @override
+  TsElement? get video => _findFirst('video');
+
+  @override
+  TsElement? get audio => _findFirst('audio');
+
+  @override
+  TsElement? get script => _findFirst('script');
+
+  @override
+  TsElement? get style => _findFirst('style');
+
+  @override
+  TsElement? get linkTag => _findFirst('link');
+
   // Plural Collection Getters
 
   @override
@@ -198,4 +285,88 @@ class Tags implements ITags {
 
   @override
   List<TsElement> get headings => _findAll('h1, h2, h3, h4, h5, h6');
+
+  @override
+  List<TsElement> get strongs => _findAll('strong');
+
+  @override
+  List<TsElement> get ems => _findAll('em');
+
+  @override
+  List<TsElement> get us => _findAll('u');
+
+  @override
+  List<TsElement> get blockquotes => _findAll('blockquote');
+
+  @override
+  List<TsElement> get brs => _findAll('br');
+
+  @override
+  List<TsElement> get hrs => _findAll('hr');
+
+  @override
+  List<TsElement> get smalls => _findAll('small');
+
+  @override
+  List<TsElement> get marks => _findAll('mark');
+
+  @override
+  List<TsElement> get subs => _findAll('sub');
+
+  @override
+  List<TsElement> get sups => _findAll('sup');
+
+  @override
+  List<TsElement> get dts => _findAll('dt');
+
+  @override
+  List<TsElement> get dds => _findAll('dd');
+
+  @override
+  List<TsElement> get theads => _findAll('thead');
+
+  @override
+  List<TsElement> get tbodys => _findAll('tbody');
+
+  @override
+  List<TsElement> get tfoots => _findAll('tfoot');
+
+  @override
+  List<TsElement> get captions => _findAll('caption');
+
+  @override
+  List<TsElement> get options => _findAll('option');
+
+  @override
+  List<TsElement> get fieldsets => _findAll('fieldset');
+
+  @override
+  List<TsElement> get asides => _findAll('aside');
+
+  @override
+  List<TsElement> get figures => _findAll('figure');
+
+  @override
+  List<TsElement> get figcaptions => _findAll('figcaption');
+
+  @override
+  List<TsElement> get detailsList => _findAll('details');
+
+  @override
+  List<TsElement> get summaries => _findAll('summary');
+
+  @override
+  List<TsElement> get videos => _findAll('video');
+
+  @override
+  List<TsElement> get audios => _findAll('audio');
+
+  @override
+  List<TsElement> get scripts => _findAll('script');
+
+  @override
+  List<TsElement> get styles => _findAll('style');
+
+  @override
+  List<TsElement> get linkTags => _findAll('link');
 }
